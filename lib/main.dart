@@ -53,61 +53,65 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: FutureBuilder(
-                future: context.read<DatabaseProvider>().loadNotes(),
-                builder:
-                    (BuildContext context, AsyncSnapshot<List<Map>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      snapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        return Dismissible(
-                          key: UniqueKey(),
-                          onDismissed: (direction) => context
-                              .read<DatabaseProvider>()
-                              .deleteNote(snapshot.data![index]['id']),
-                          child: Card(
-                            color: Colors.purpleAccent,
-                            child: Column(
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    showMyDialogEdit(
-                                      context,
-                                      snapshot.data![index]['title'],
-                                      snapshot.data![index]['content'],
-                                      snapshot.data![index]['id'],
-                                    );
-                                  },
-                                  icon: const Icon(Icons.edit),
-                                ),
-                                Text(
-                                  ('id:  ') +
-                                      (snapshot.data![index]['id'].toString()),
-                                ),
-                                Text(
-                                  ('title:  ') +
-                                      (snapshot.data![index]['title']
-                                          .toString()),
-                                ),
-                                Text(
-                                  ('content:  ') +
-                                      (snapshot.data![index]['content']
-                                          .toString()),
-                                ),
-                              ],
+              child: Consumer<DatabaseProvider>(
+                  builder: (context, provider, child) {
+                return FutureBuilder(
+                  future: context.read<DatabaseProvider>().loadNotes(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Map>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done &&
+                        snapshot.hasData) {
+                      return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          return Dismissible(
+                            key: UniqueKey(),
+                            onDismissed: (direction) => context
+                                .read<DatabaseProvider>()
+                                .deleteNote(snapshot.data![index]['id']),
+                            child: Card(
+                              color: Colors.purpleAccent,
+                              child: Column(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      showMyDialogEdit(
+                                        context,
+                                        snapshot.data![index]['title'],
+                                        snapshot.data![index]['content'],
+                                        snapshot.data![index]['id'],
+                                      );
+                                    },
+                                    icon: const Icon(Icons.edit),
+                                  ),
+                                  Text(
+                                    ('id:  ') +
+                                        (snapshot.data![index]['id']
+                                            .toString()),
+                                  ),
+                                  Text(
+                                    ('title:  ') +
+                                        (snapshot.data![index]['title']
+                                            .toString()),
+                                  ),
+                                  Text(
+                                    ('content:  ') +
+                                        (snapshot.data![index]['content']
+                                            .toString()),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      );
+                    }
+                    return const Center(
+                      child: CircularProgressIndicator(),
                     );
-                  }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-              ),
+                  },
+                );
+              }),
             ),
             Expanded(
               child: Consumer<DatabaseProvider>(
